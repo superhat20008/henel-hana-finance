@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="פיננסים">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0d9488">
+    <title>פיננסים - חן אל וחנה</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Heebo & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Heebo', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: contain;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .number-ltr {
+            direction: ltr;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <!-- Brand & Sync Status -->
+            <div class="flex items-center justify-between w-full sm:w-auto gap-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-600 flex items-center justify-center text-white shadow-sm">
+                        <i class="fa-solid fa-wallet text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg sm:text-xl font-bold text-slate-800 leading-tight">פיננסים משותף</h1>
+                        <p class="text-xs text-slate-500 font-medium">חן אל וחנה • מעקב חכם</p>
+                    </div>
+                </div>
+                
+                <!-- Sync Indicator -->
+                <div id="sync-badge" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 transition-colors">
+                    <span id="sync-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span id="sync-text">מתחבר לענן...</span>
+                </div>
+            </div>
+
+            <!-- Profile Switcher Tabs -->
+            <div class="bg-slate-100 p-1 rounded-xl flex w-full sm:w-auto border border-slate-200/80">
+                <button id="tab-chenel" onclick="switchTab('chenel')" class="flex-1 sm:w-36 py-2 px-4 rounded-lg text-sm font-bold transition-all duration-200 flex items-center justify-center gap-2 bg-white text-teal-700 shadow-sm">
+                    <i class="fa-solid fa-bullseye"></i>
+                    <span>חן אל</span>
+                </button>
+                <button id="tab-hana" onclick="switchTab('hana')" class="flex-1 sm:w-36 py-2 px-4 rounded-lg text-sm font-bold transition-all duration-200 flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900">
+                    <i class="fa-solid fa-building-columns"></i>
+                    <span>חנה</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- PWA Install Banner (Mobile & Desktop) -->
+    <div id="pwa-install-banner" class="hidden bg-teal-900 text-white px-4 py-2.5 shadow-inner">
+        <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-mobile-screen-button text-teal-300 text-base"></i>
+                <span id="pwa-install-text">התקינו את האפליקציה על מסך הבית בטלפון לגישה מהירה!</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="pwa-install-btn" onclick="triggerPwaInstall()" class="px-3 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg transition-colors">
+                    התקן אפליקציה
+                </button>
+                <button onclick="dismissPwaBanner()" class="text-teal-300 hover:text-white p-1" title="סגור">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+        <!-- ========================================== -->
+        <!-- VIEW 1: CHEN EL (חן אל)                    -->
+        <!-- ========================================== -->
+        <section id="view-chenel" class="space-y-6 transition-opacity duration-200">
+            
+            <!-- 3 KPI Cards Row (Unified Template) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Card 1: Primary Highlighted KPI -->
+                <div class="bg-gradient-to-br from-teal-600 to-cyan-700 rounded-2xl p-5 text-white shadow-md relative overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-teal-100 text-sm font-medium mb-1">יתרה שנותרה לכיסוי</p>
+                            <h2 id="ce-kpi-remaining" class="text-3xl sm:text-4xl font-extrabold tracking-tight number-ltr">₪ 3,500</h2>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-white">
+                            <i class="fa-solid fa-flag-checkered text-lg"></i>
+                        </div>
+                    </div>
+                    <!-- Progress Bar inside Primary Card -->
+                    <div class="mt-4">
+                        <div class="flex justify-between text-xs text-teal-100 mb-1.5 font-medium">
+                            <span>התקדמות ליעד</span>
+                            <span id="ce-progress-percent">12.5%</span>
+                        </div>
+                        <div class="w-full bg-black/20 rounded-full h-2.5 overflow-hidden">
+                            <div id="ce-progress-bar" class="bg-white h-2.5 rounded-full transition-all duration-500" style="width: 12.5%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Target Amount (Editable) -->
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-slate-500 text-sm font-medium mb-1">סך יעד הוצאות צפויות</p>
+                            <h3 id="ce-kpi-target" class="text-2xl sm:text-3xl font-bold text-slate-800 number-ltr">₪ 4,000</h3>
+                        </div>
+                        <button onclick="openTargetModal()" class="text-xs bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-teal-700 font-semibold px-3 py-1.5 rounded-lg border border-slate-200 transition-colors flex items-center gap-1.5" title="ערוך סכום יעד">
+                            <i class="fa-solid fa-pen"></i>
+                            <span>ערוך יעד</span>
+                        </button>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-4 flex items-center gap-1">
+                        <i class="fa-solid fa-circle-info text-teal-500"></i>
+                        <span>סכום היעד לחודשים הקרובים</span>
+                    </p>
+                </div>
+
+                <!-- Card 3: Total Saved / Covered so far -->
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-slate-500 text-sm font-medium mb-1">סך הכל כוסה / נחסך עד כה</p>
+                            <h3 id="ce-kpi-saved" class="text-2xl sm:text-3xl font-bold text-emerald-600 number-ltr">+ ₪ 500</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                            <i class="fa-solid fa-piggy-bank text-lg"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-4 flex items-center gap-1">
+                        <i class="fa-solid fa-calculator text-slate-400"></i>
+                        <span>סכום ההפרשים החודשיים נטו (הכנסות פחות הוצאות)</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Action Card: Monthly Update (10th of the month) -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="bg-slate-50/80 px-5 py-3.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-teal-500"></span>
+                        <h3 id="ce-form-title" class="font-bold text-slate-800 text-base">עדכון חודשי (כל 10 לחודש)</h3>
+                    </div>
+                    <span id="ce-live-preview" class="text-xs font-semibold px-3 py-1 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
+                        הפרש חודשי נטו: +500 ₪
+                    </span>
+                </div>
+
+                <form id="ce-form" onsubmit="handleChenElSubmit(event)" class="p-5 space-y-4">
+                    <input type="hidden" id="ce-edit-id" value="">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Income Input -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">הכנסה / משכורת החודש (₪)</label>
+                            <div class="relative">
+                                <input type="number" id="ce-income" step="any" required placeholder="לדוגמה: 1000" oninput="updateChenElPreview()"
+                                    class="w-full pl-8 pr-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-semibold focus:bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all">
+                                <span class="absolute left-3 top-2.5 text-slate-400 font-bold">₪</span>
+                            </div>
+                        </div>
+
+                        <!-- Expense Input -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">הוצאות החודש (₪)</label>
+                            <div class="relative">
+                                <input type="number" id="ce-expense" step="any" required placeholder="לדוגמה: 500" oninput="updateChenElPreview()"
+                                    class="w-full pl-8 pr-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-semibold focus:bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all">
+                                <span class="absolute left-3 top-2.5 text-slate-400 font-bold">₪</span>
+                            </div>
+                        </div>
+
+                        <!-- Date Input (Defaults to 10th of current month) -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">תאריך עדכון</label>
+                            <input type="date" id="ce-date" required
+                                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 font-medium focus:bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all">
+                        </div>
+
+                        <!-- Optional Note -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">הערה אופציונלית</label>
+                            <input type="text" id="ce-note" placeholder="לדוגמה: משכורת נובמבר"
+                                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all">
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                        <p class="text-xs text-slate-500">
+                            * יתרת ההוצאות לכיסוי תתעדכן אוטומטית לפי ההפרש (הכנסה פחות הוצאה).
+                        </p>
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                            <button type="button" id="ce-cancel-edit-btn" onclick="cancelChenElEdit()" class="hidden px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">
+                                ביטול עריכה
+                            </button>
+                            <button type="submit" id="ce-submit-btn" class="w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 active:scale-[0.99] shadow-sm transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>הוסף עדכון חודשי</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- History Table Card (Unified Template) -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-slate-400"></i>
+                        <h3 class="font-bold text-slate-800 text-base">היסטוריית עדכונים חודשיים</h3>
+                    </div>
+                    <button onclick="confirmReset('chenel')" class="text-xs font-semibold text-slate-500 hover:text-rose-600 px-3 py-1.5 rounded-lg hover:bg-rose-50 transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>איפוס לדוגמת ברירת מחדל</span>
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 text-xs font-bold border-b border-slate-200">
+                                <th class="py-3 px-4">תאריך</th>
+                                <th class="py-3 px-4">הכנסה</th>
+                                <th class="py-3 px-4">הוצאה</th>
+                                <th class="py-3 px-4">הפרש נטו</th>
+                                <th class="py-3 px-4">הערה</th>
+                                <th class="py-3 px-4 text-left">פעולות</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ce-history-body" class="divide-y divide-slate-100 text-sm">
+                            <!-- Rows injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: HANA (חנה)                        -->
+        <!-- ========================================== -->
+        <section id="view-hana" class="hidden space-y-6 transition-opacity duration-200">
+            
+            <!-- 3 KPI Cards Row (Unified Template) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Card 1: Primary Highlighted KPI (Hana's Real Money) -->
+                <div class="bg-gradient-to-br from-cyan-600 to-teal-700 rounded-2xl p-5 text-white shadow-md relative overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-cyan-100 text-sm font-medium mb-1">הכסף האמיתי של חנה בבנק</p>
+                            <h2 id="hana-kpi-real" class="text-3xl sm:text-4xl font-extrabold tracking-tight number-ltr">₪ 10,900</h2>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-white">
+                            <i class="fa-solid fa-shield-halved text-lg"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-cyan-100 mt-4 flex items-center gap-1.5 font-medium">
+                        <i class="fa-solid fa-check-circle"></i>
+                        <span>יתרת בנק כוללת פחות הכסף של אבא בחשבון</span>
+                    </p>
+                </div>
+
+                <!-- Card 2: Total Bank Balance -->
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-slate-500 text-sm font-medium mb-1">יתרה כוללת בבנק כרגע</p>
+                            <h3 id="hana-kpi-bank" class="text-2xl sm:text-3xl font-bold text-slate-800 number-ltr">₪ 13,255</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600">
+                            <i class="fa-solid fa-building-columns text-lg"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-4 flex items-center gap-1">
+                        <i class="fa-solid fa-eye text-slate-400"></i>
+                        <span>הסכום המוצג באפליקציית הבנק</span>
+                    </p>
+                </div>
+
+                <!-- Card 3: Dad's Money Currently in Account -->
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-slate-500 text-sm font-medium mb-1">כסף של אבא בחשבון</p>
+                            <h3 id="hana-kpi-dad" class="text-2xl sm:text-3xl font-bold text-amber-600 number-ltr">₪ 2,355</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
+                            <i class="fa-solid fa-hand-holding-dollar text-lg"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-4 flex items-center gap-1">
+                        <i class="fa-solid fa-clock text-amber-500"></i>
+                        <span>פיקדון זמני מאבא (מתוך 10,000 ₪)</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Action Card: Quick Balance & Dad Withdrawal Update -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="bg-slate-50/80 px-5 py-3.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
+                        <h3 class="font-bold text-slate-800 text-base">עדכון יתרת בנק וכסף של אבא</h3>
+                    </div>
+                    <span id="hana-live-preview" class="text-xs font-semibold px-3 py-1 rounded-full bg-cyan-50 text-cyan-800 border border-cyan-200">
+                        הכסף נטו של חנה: 10,900 ₪
+                    </span>
+                </div>
+
+                <form id="hana-form" onsubmit="handleHanaSubmit(event)" class="p-5 space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Bank Balance Input -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">סכום נוכחי בבנק (₪)</label>
+                            <div class="relative">
+                                <input type="number" id="hana-bank-input" step="any" required oninput="updateHanaPreview()"
+                                    class="w-full pl-8 pr-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-bold focus:bg-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-all">
+                                <span class="absolute left-3 top-2.5 text-slate-400 font-bold">₪</span>
+                            </div>
+                        </div>
+
+                        <!-- Dad's Money Input -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="block text-xs font-bold text-slate-700">כסף של אבא שנשאר בחשבון (₪)</label>
+                                <button type="button" onclick="toggleQuickWithdraw()" class="text-xs font-bold text-amber-600 hover:text-amber-700 underline flex items-center gap-1">
+                                    <i class="fa-solid fa-minus-circle"></i>
+                                    <span>אבא משך כסף?</span>
+                                </button>
+                            </div>
+                            <div class="relative">
+                                <input type="number" id="hana-dad-input" step="any" required oninput="updateHanaPreview()"
+                                    class="w-full pl-8 pr-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-bold focus:bg-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-all">
+                                <span class="absolute left-3 top-2.5 text-slate-400 font-bold">₪</span>
+                            </div>
+                        </div>
+
+                        <!-- Note Input -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">הערה / תיאור פעולה</label>
+                            <input type="text" id="hana-note-input" placeholder="לדוגמה: משיכה של אבא / עדכון שבועי"
+                                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:bg-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Helper Box: Quick Dad Withdrawal Calculator -->
+                    <div id="quick-withdraw-box" class="hidden bg-amber-50/90 border border-amber-200 rounded-xl p-4 transition-all">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                            <div>
+                                <h4 class="text-sm font-bold text-amber-900 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-calculator text-amber-600"></i>
+                                    <span>מחשבון משיכה מהיר של אבא</span>
+                                </h4>
+                                <p class="text-xs text-amber-700 mt-0.5">הזיני כמה אבא משך עכשיו, ואנחנו נפחית את זה אוטומטית מהסכום שלו (וגם מיתרת הבנק אם תרצי).</p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                                <input type="number" id="dad-withdraw-amount" placeholder="סכום שנמשך (₪)" class="w-36 px-3 py-2 bg-white border border-amber-300 rounded-lg text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <label class="flex items-center gap-1.5 text-xs font-semibold text-amber-900 cursor-pointer select-none">
+                                    <input type="checkbox" id="deduct-from-bank-chk" checked class="rounded text-amber-600 focus:ring-amber-500">
+                                    <span>הפחת גם מהבנק</span>
+                                </label>
+                                <button type="button" onclick="applyDadWithdrawal()" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors">
+                                    חשב והפחת
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+                        <p class="text-xs text-slate-500">
+                            * לחיצה על שמירה תעדכן את היתרה הנוכחית ותוסיף שורה חדשה ליומן ההיסטוריה.
+                        </p>
+                        <button type="submit" class="w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-cyan-600 hover:bg-cyan-700 active:scale-[0.99] shadow-sm transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>שמור עדכון יתרה</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- History Table Card (Unified Template) -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-slate-400"></i>
+                        <h3 class="font-bold text-slate-800 text-base">יומן היסטוריית עדכונים (חנה)</h3>
+                    </div>
+                    <button onclick="confirmReset('hana')" class="text-xs font-semibold text-slate-500 hover:text-rose-600 px-3 py-1.5 rounded-lg hover:bg-rose-50 transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>איפוס לדוגמת ברירת מחדל</span>
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 text-xs font-bold border-b border-slate-200">
+                                <th class="py-3 px-4">תאריך ושעה</th>
+                                <th class="py-3 px-4">יתרת בנק כוללת</th>
+                                <th class="py-3 px-4">כסף של אבא</th>
+                                <th class="py-3 px-4">נטו של חנה</th>
+                                <th class="py-3 px-4">הערה</th>
+                                <th class="py-3 px-4 text-left">פעולות</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hana-history-body" class="divide-y divide-slate-100 text-sm">
+                            <!-- Rows injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="max-w-5xl w-full mx-auto px-4 py-6 text-center text-xs text-slate-400 space-y-1">
+        <div>אפליקציית פיננסים משותפת • חן אל וחנה • מסונכרן לענן בזמן אמת</div>
+        <div id="ios-install-hint" class="hidden text-slate-500">
+            <i class="fa-solid fa-arrow-up-from-bracket text-teal-600"></i>
+            להתקנה באייפון: לחצו על כפתור השיתוף למטה ובחרו <strong>"הוסף למסך הבית"</strong>
+        </div>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- MODALS & TOAST NOTIFICATIONS (No alert())  -->
+    <!-- ========================================== -->
+
+    <!-- Modal 1: Edit Chen El's Target Amount -->
+    <div id="target-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 transform transition-all">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-slate-800">עריכת סכום יעד הוצאות צפויות</h3>
+                <button onclick="closeTargetModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <p class="text-sm text-slate-600 mb-4">הזן את סכום היעד הכולל של ההוצאות הצפויות לחודשים הקרובים שאליו תרצה להגיע:</p>
+            <div class="relative mb-5">
+                <input type="number" id="modal-target-input" step="any" class="w-full pl-8 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-lg font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-teal-500 outline-none">
+                <span class="absolute left-3.5 top-3.5 text-slate-400 font-bold">₪</span>
+            </div>
+            <div class="flex justify-end gap-2">
+                <button onclick="closeTargetModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200">ביטול</button>
+                <button onclick="saveNewTarget()" class="px-5 py-2 rounded-xl text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm">שמור יעד חדש</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Confirm Reset / Delete -->
+    <div id="confirm-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
+            <div class="flex items-center gap-3 text-rose-600 mb-3">
+                <div class="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center">
+                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                </div>
+                <h3 id="confirm-title" class="text-lg font-bold text-slate-800">אישור פעולה</h3>
+            </div>
+            <p id="confirm-message" class="text-sm text-slate-600 mb-6">האם אתה בטוח שברצונך לבצע פעולה זו?</p>
+            <div class="flex justify-end gap-2">
+                <button onclick="closeConfirmModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200">ביטול</button>
+                <button id="confirm-action-btn" class="px-5 py-2 rounded-xl text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm">כן, בצע</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-slate-800 text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2.5 opacity-0 pointer-events-none transition-all duration-300 translate-y-2">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-teal-400"></i>
+        <span id="toast-text">הנתונים נשמרו בהצלחה</span>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- APPLICATION LOGIC & FIREBASE REALTIME SYNC -->
+    <!-- ========================================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+        // Your exact Firebase project configuration (henel-hana-finance)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDLRYJkTGHTL__lM5nH808jqDy1zDTeEmQ",
+            authDomain: "henel-hana-finance.firebaseapp.com",
+            projectId: "henel-hana-finance",
+            storageBucket: "henel-hana-finance.firebasestorage.app",
+            messagingSenderId: "179570830730",
+            appId: "1:179570830730:web:70781f05a7bd8bf496ec73"
+        };
+
+        // Global App State
+        let activeTab = 'chenel';
+        let db = null;
+        let isCloudReady = false;
+        const LOCAL_STORAGE_KEY = 'henel_hana_finance_backup_v1';
+
+        // Default Initial Data matching user's exact examples
+        function getDefaultChenElData() {
+            const now = new Date();
+            const tenthDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-10`;
+            return {
+                targetAmount: 4000,
+                entries: [
+                    {
+                        id: 'ce_init_1',
+                        date: tenthDate,
+                        income: 1000,
+                        expense: 500,
+                        note: 'דוגמה ראשונית (10 לחודש)'
+                    }
+                ]
+            };
+        }
+
+        function getDefaultHanaData() {
+            const nowStr = new Date().toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            return {
+                bankBalance: 13255,
+                dadBalance: 2355,
+                history: [
+                    {
+                        id: 'hana_init_1',
+                        timestamp: nowStr,
+                        bankBalance: 13255,
+                        dadBalance: 2355,
+                        realBalance: 10900,
+                        note: 'מצב נוכחי לדוגמה (מתוך 10,000 ₪ של אבא)'
+                    }
+                ]
+            };
+        }
+
+        let chenElData = getDefaultChenElData();
+        let hanaData = getDefaultHanaData();
+
+        // Load local cache immediately for instant UI startup
+        function loadFromLocalCache() {
+            try {
+                const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed.chenel) chenElData = parsed.chenel;
+                    if (parsed.hana) hanaData = parsed.hana;
+                }
+            } catch (e) {
+                console.warn('Local cache read skipped:', e);
+            }
+        }
+
+        function saveToLocalCache() {
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({
+                    chenel: chenElData,
+                    hana: hanaData
+                }));
+            } catch (e) {
+                console.warn('Local cache write skipped:', e);
+            }
+        }
+
+        // Format Israeli Shekel Currency
+        function formatILS(num, showSign = false) {
+            const val = Number(num) || 0;
+            const absFormatted = Math.abs(val).toLocaleString('he-IL', { maximumFractionDigits: 2 });
+            if (showSign) {
+                if (val > 0) return `+ ₪ ${absFormatted}`;
+                if (val < 0) return `- ₪ ${absFormatted}`;
+                return `₪ 0`;
+            }
+            return val < 0 ? `- ₪ ${absFormatted}` : `₪ ${absFormatted}`;
+        }
+
+        // Show Toast Message
+        let toastTimeout;
+        window.showToast = function(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toast-text');
+            const toastIcon = document.getElementById('toast-icon');
+            
+            toastText.textContent = message;
+            toastIcon.className = isError 
+                ? 'fa-solid fa-circle-exclamation text-rose-400' 
+                : 'fa-solid fa-circle-check text-teal-400';
+            
+            toast.classList.remove('opacity-0', 'translate-y-2', 'pointer-events-none');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2', 'pointer-events-none');
+            }, 3000);
+        };
+
+        // Update Sync Badge UI
+        function setSyncStatus(status) {
+            const dot = document.getElementById('sync-dot');
+            const text = document.getElementById('sync-text');
+            const badge = document.getElementById('sync-badge');
+
+            if (status === 'connected') {
+                dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+                text.textContent = 'מסונכרן לענן ☁️';
+                badge.className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/70';
+            } else if (status === 'saving') {
+                dot.className = 'w-2 h-2 rounded-full bg-cyan-500 animate-ping';
+                text.textContent = 'שומר בענן...';
+            } else if (status === 'offline') {
+                dot.className = 'w-2 h-2 rounded-full bg-amber-500';
+                text.textContent = 'מצב לא מקוון (מקומי)';
+                badge.className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200';
+            }
+        }
+
+        // Initialize Firebase Cloud Firestore and Realtime Listener
+        function initFirebase() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+
+                const sharedDocRef = doc(db, 'finance_data', 'shared_state');
+
+                // Listen in real-time to shared_state document
+                onSnapshot(sharedDocRef, (snapshot) => {
+                    isCloudReady = true;
+                    if (snapshot.exists()) {
+                        const data = snapshot.data();
+                        if (data.chenel) {
+                            chenElData = {
+                                targetAmount: data.chenel.targetAmount !== undefined ? Number(data.chenel.targetAmount) : 4000,
+                                entries: Array.isArray(data.chenel.entries) ? data.chenel.entries : []
+                            };
+                        }
+                        if (data.hana) {
+                            hanaData = {
+                                bankBalance: data.hana.bankBalance !== undefined ? Number(data.hana.bankBalance) : 13255,
+                                dadBalance: data.hana.dadBalance !== undefined ? Number(data.hana.dadBalance) : 2355,
+                                history: Array.isArray(data.hana.history) ? data.hana.history : []
+                            };
+                        }
+                        saveToLocalCache();
+                    } else {
+                        // First time initialization in Firestore
+                        setDoc(sharedDocRef, {
+                            chenel: chenElData,
+                            hana: hanaData,
+                            updatedAt: new Date().toISOString()
+                        }).catch((err) => {
+                            console.warn("Initial Firestore write failed (check rules):", err);
+                            setSyncStatus('offline');
+                        });
+                    }
+                    renderAll();
+                    setSyncStatus('connected');
+                }, (error) => {
+                    console.error("Firestore onSnapshot error:", error);
+                    isCloudReady = false;
+                    setSyncStatus('offline');
+                });
+
+            } catch (err) {
+                console.error("Firebase init failed:", err);
+                setSyncStatus('offline');
+            }
+        }
+
+        // Unified Save to Firestore + Local Backup
+        async function saveSharedStateToCloud() {
+            saveToLocalCache();
+            renderAll();
+
+            if (!db) return;
+            try {
+                setSyncStatus('saving');
+                const sharedDocRef = doc(db, 'finance_data', 'shared_state');
+                await setDoc(sharedDocRef, {
+                    chenel: chenElData,
+                    hana: hanaData,
+                    updatedAt: new Date().toISOString()
+                });
+                setSyncStatus('connected');
+            } catch (err) {
+                console.error("Error saving to Firestore:", err);
+                setSyncStatus('offline');
+                showToast("נשמר מקומית במכשיר (בדקו חיבור רשת או הרשאות Firestore)", true);
+            }
+        }
+
+        async function saveChenElToCloud() {
+            await saveSharedStateToCloud();
+        }
+
+        async function saveHanaToCloud() {
+            await saveSharedStateToCloud();
+        }
+
+        // ==========================================
+        // PWA MANIFEST & INSTALL PROMPT SETUP
+        // ==========================================
+        let deferredInstallPrompt = null;
+
+        function setupPwaSupport() {
+            // Generate inline SVG App Icon & Web App Manifest dynamically
+            const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#14b8a6"/><stop offset="100%" stop-color="#0891b2"/></linearGradient></defs><rect width="512" height="512" rx="112" fill="url(#g)"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="240" fill="#ffffff">₪</text></svg>`;
+            const iconDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(iconSvg);
+
+            const appleTouchIcon = document.createElement('link');
+            appleTouchIcon.rel = 'apple-touch-icon';
+            appleTouchIcon.href = iconDataUrl;
+            document.head.appendChild(appleTouchIcon);
+
+            const manifestObj = {
+                name: "פיננסים - חן אל וחנה",
+                short_name: "פיננסים",
+                description: "ניהול ומעקב פיננסי משותף לחן אל וחנה",
+                start_url: window.location.href,
+                display: "standalone",
+                background_color: "#f8fafc",
+                theme_color: "#0d9488",
+                dir: "rtl",
+                lang: "he",
+                icons: [
+                    {
+                        src: iconDataUrl,
+                        sizes: "512x512",
+                        type: "image/svg+xml",
+                        purpose: "any maskable"
+                    }
+                ]
+            };
+
+            const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+            const manifestUrl = URL.createObjectURL(manifestBlob);
+            const manifestLink = document.createElement('link');
+            manifestLink.rel = 'manifest';
+            manifestLink.href = manifestUrl;
+            document.head.appendChild(manifestLink);
+
+            // Listen for Android / Chrome install prompt
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredInstallPrompt = e;
+                const banner = document.getElementById('pwa-install-banner');
+                if (banner) banner.classList.remove('hidden');
+            });
+
+            // Detect iOS Safari not yet in standalone mode
+            const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            if (isIos && !isStandalone) {
+                const iosHint = document.getElementById('ios-install-hint');
+                if (iosHint) iosHint.classList.remove('hidden');
+            }
+        }
+
+        window.triggerPwaInstall = async function() {
+            if (!deferredInstallPrompt) return;
+            deferredInstallPrompt.prompt();
+            const { outcome } = await deferredInstallPrompt.userChoice;
+            if (outcome === 'accepted') {
+                document.getElementById('pwa-install-banner').classList.add('hidden');
+                showToast("האפליקציה הותקנה למסך הבית!");
+            }
+            deferredInstallPrompt = null;
+        };
+
+        window.dismissPwaBanner = function() {
+            document.getElementById('pwa-install-banner').classList.add('hidden');
+        };
+
+        // ==========================================
+        // NAVIGATION & TAB SWITCHING
+        // ==========================================
+        window.switchTab = function(tab) {
+// ... existing code ... -->
+        // Initialize App on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            setupPwaSupport();
+            loadFromLocalCache();
+            setDefaultTenthDate();
+            updateChenElPreview();
+            renderAll();
+            initFirebase();
+        });
+    </script>
+</body>
+</html>
